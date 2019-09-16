@@ -93,7 +93,7 @@ def test_should_accept_only_numbers():
 ```
 ## References
 
-- [What Exactly is a Unit in Unit Testing?](https://www.blinkingcaret.com/2016/04/27/what-exactly-is-a-unit-in-unit-testing/){:target="_blank"}
-- [10 Tips](https://dzone.com/articles/10-tips-to-writing-good-unit-tests){:target="_blank"}
-- [5 Questions Every Unit Test Must Answer](https://medium.com/javascript-scene/what-every-unit-test-needs-f6cd34d9836d){:target="_blank"}
+- [What Exactly is a Unit in Unit Testing?](https://www.blinkingcaret.com/2016/04/27/what-exactly-is-a-unit-in-unit-testing/)
+- [10 Tips](https://dzone.com/articles/10-tips-to-writing-good-unit-tests)
+- [5 Questions Every Unit Test Must Answer](https://medium.com/javascript-scene/what-every-unit-test-needs-f6cd34d9836d)
 
