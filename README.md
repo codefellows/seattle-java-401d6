@@ -9,6 +9,10 @@ Students will use IntelliJ IDEA and Android Studio to create Java applications. 
 
 The course focuses on fundamental computer science concepts like object-oriented programming, advanced data structures and algorithms, Big O asymptotic analysis, and the structure of statically typed languages.
 
+## Course Scheduling
+
+Career coaching workshops: October 4, October 25, November 8
+
 ## Schedule example
 
 |Time   | Monday  | Tuesday |Wednesday|Thursday |Friday|
