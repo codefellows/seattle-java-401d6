@@ -3,8 +3,37 @@
  */
 package demo;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Library {
     public boolean someLibraryMethod() {
+        ArrayList<String> names = new ArrayList<>();
+        names.add("Michelle");
+        names.add("Nicholas");
+        names.add("Jeff");
+//        System.out.println(names.remove(1));
+        for(String name : names) {
+//            System.out.println(name);
+        }
+
+        ArrayList<Integer> nums = new ArrayList<>();
+        nums.add(4);
+        int num = nums.remove(0);
+
+
+        HashMap<String, Integer> shoeSizes = new HashMap<>();
+        shoeSizes.put("Michelle", 9); // in JS: shoeSizes["Michelle"] = 9;
+        shoeSizes.put("Nicholas", 13);
+        shoeSizes.put("Jeff", 18);
+        System.out.println(shoeSizes.get("Nicholas")); // shoeSizes["Nicholas"]
+
+        for(String name : shoeSizes.keySet()){
+            String answer = String.format("%s: %d", name, shoeSizes.get(name));
+            System.out.println(answer);
+        }
+
         return true;
     }
 }
