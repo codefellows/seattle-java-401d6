@@ -5,6 +5,9 @@ package alice;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
 
 public class App {
@@ -15,18 +18,32 @@ public class App {
 
     public static void findCommonAliceCharacters() {
         try{
-            Scanner aliceReader = new Scanner(new File("alice.txt"));
+            HashSet<String> characterSet = new HashSet<String>(Arrays.asList(characters));
+            HashMap<String, Integer> characterCounts = new HashMap<>();
+            for (String character : characters) {
+                characterCounts.put(character, 0);
+            }
+            // file path starts at the same level as build.gradle
+            Scanner aliceReader = new Scanner(new File("src/main/resources/alice.txt"));
             while(aliceReader.hasNext()) {
-                System.out.println(aliceReader.next());
+                String word = aliceReader.next().toLowerCase();
+                // each time we find one of these characters,
+                if(characterSet.contains(word)) {
+                    // increment its count by 1
+                    characterCounts.put(word, characterCounts.get(word) + 1);
+                }
+
+            }
+            // at the end, show how often each character showed up
+            for (String character : characterCounts.keySet()) {
+                System.out.println( String.format("%s: %d", character, characterCounts.get(character)) );
             }
         } catch(FileNotFoundException e) {
             System.out.println("could not find alice.txt");
         }
     }
     // read through alice in wonderland
-    // each time we find one of these characters,
-    // count it
-    // at the end, show how often each character showed up
+
     public static void main(String[] args) {
         findCommonAliceCharacters();
     }
