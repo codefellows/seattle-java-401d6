@@ -2,7 +2,7 @@
 
 ## Agenda
 - Announcements
-  - Partner Power Hour is tomorrow, optional
+  - Partner Power Hour is tomorrow, is required! Please attend well.
 - Code review
 - Daily systems: Directories & Files
 - Warmup questions
