@@ -2,7 +2,7 @@
 
 ## Agenda
 - Announcements
-  - Feedback results review
+  - Feedback review
   - First Career Coaching workshop will be next Friday, October 4
     - Career coaching assignments due on or before that day will lock on Friday October 4
   - Code Challenge overview: what does this week look like?
@@ -20,7 +20,7 @@
 4. What was the relationship between our `LinkedList` class and our `Node` class?
 
 
-## Feedback Results
+## Feedback Review
 
 ### The Good/The Most Helpful
 
