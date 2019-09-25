@@ -2,7 +2,7 @@ package demo;
 
 // it doesn't say "extends Object", but it might as well
 // everything extends from Object, even if we don't want that.
-public class Cat {
+public class Cat implements ShelterableAnimal{
     boolean hasClaws;
     double weightInKilos;
     int friendliness;
@@ -30,5 +30,20 @@ public class Cat {
     @Override
     public String toString() {
         return String.format("A cat that is %d friendly", this.friendliness);
+    }
+
+    @Override
+    public String getEnclosureType() {
+        return "house";
+    }
+
+    @Override
+    public boolean canBeHousedWithOtherAnimalsOfType(Class type) {
+        return this.friendliness > 5;
+    }
+
+    @Override
+    public String getFoodType() {
+        return "kibble and small birds";
     }
 }
