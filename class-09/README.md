@@ -2,15 +2,18 @@
 
 ## Agenda
 - Announcements
-    - Partner Power Hour tomorrow.
+    - Partner Power Hour tomorrow. Michelle is moderating.
+    - Michelle leaving at 5 one week from today, out one week from tomorrow (on career coaching day)
     - Make sure you're turning in assignments before lecture starts!
     - Take care of yourself!
 - Code review
-    - LinkedLists
+    - LinkedLists (and recursion!)
     - GSON
-- Daily Systems: Dotfiles
 - Warmup questions
 - Lecture
+    - How Do Internet
+    - Requests and responses
+    - Synchronous vs. asynchronous code
 - Lab intro
 
 ## Warmup Questions
