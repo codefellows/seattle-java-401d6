@@ -8,7 +8,7 @@
 
 ## Agenda
 - Announcements
-    - Don't forget that career coaching is coming on Friday!
+    - Don't forget that career coaching is coming on Friday! And Michelle won't be here.
     - Feedback review
 - Code review
     - Stacks & Queues
