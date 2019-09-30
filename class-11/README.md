@@ -24,6 +24,7 @@
 2. What is a method, in HTTP?
 3. What is a route?
 4. What is the job of a server?
+5. What is MVC? What are the jobs of each portion?
 
 ## Learning Objectives
 * Students will be able to configure a Java project with Spring dependencies.
