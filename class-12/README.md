@@ -8,7 +8,7 @@
 
 ## Agenda
 - Announcements
-    - How's project week prep?
+    - Fridge cleanout Friday!
 - Code review
     - Stacks using two queues
     - Spring apps
