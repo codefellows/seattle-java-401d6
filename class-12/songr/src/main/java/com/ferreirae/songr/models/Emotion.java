@@ -1,6 +1,16 @@
-package com.ferreirae.songr;
+package com.ferreirae.songr.models;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class Emotion {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
     public String emotionName;
     int strength;
     String reason;

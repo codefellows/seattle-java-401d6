@@ -1,5 +1,6 @@
-package com.ferreirae.songr;
+package com.ferreirae.songr.controllers;
 
+import com.ferreirae.songr.models.Emotion;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
