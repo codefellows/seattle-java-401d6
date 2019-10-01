@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Home</h1>
+    <h2>Welcome,
+        <span th:if="${username != null}" th:text="${username}"></span>
+        <span th:if="${username == null}">user</span>
+        ! You <span th:unless="${hasDogs}">don't</span> have a dog!
+    </h2>
+    <h3>The potato is <span th:text="${potato}"></span></h3>
+</body>
+</html>

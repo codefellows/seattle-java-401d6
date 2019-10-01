@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feelings</title>
+</head>
+<body>
+    <h1>All The Feels</h1>
+
+    <ul>
+        <li th:each="feel : ${feelings}" th:text="${feel}" th:class="${feel.emotionName}">
+        </li>
+    </ul>
+</body>
+</html>
