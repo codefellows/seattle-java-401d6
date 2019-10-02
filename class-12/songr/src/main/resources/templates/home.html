@@ -12,5 +12,12 @@
         ! You <span th:unless="${hasDogs}">don't</span> have a dog!
     </h2>
     <h3>The potato is <span th:text="${potato}"></span></h3>
+
+    <form action="/emotions" method="POST">
+        <input type="text" name="emotionName"> name
+        <input type="number" name="strength"> str
+        <input type="text" name="reason"> reason
+        <input type="submit" value="add emotions">
+    </form>
 </body>
 </html>

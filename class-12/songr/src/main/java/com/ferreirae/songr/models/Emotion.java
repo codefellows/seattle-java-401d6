@@ -15,6 +15,8 @@ public class Emotion {
     int strength;
     String reason;
 
+    public Emotion(){}
+
     public Emotion(String emotionName, int strength, String reason) {
         this.emotionName = emotionName;
         this.strength = strength;
