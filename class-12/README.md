@@ -1,7 +1,6 @@
 # Class 12: Spring and RESTful Routing
 
 ## Resources
-* [Our demo](https://github.com/mnfmnfm/seattle-java-401d2-deploy-demo)
 * [The Spring Initializr \[sic\]](https://start.spring.io/)
 * [Spring Guides: Serving Web Content](https://spring.io/guides/gs/serving-web-content/)
 * [Spring Static Resources](https://spring.io/blog/2013/12/19/serving-static-web-content-with-spring-boot)
