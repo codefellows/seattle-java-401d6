@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feelings</title>
+</head>
+<body>
+    <h1>All The Feels</h1>
+
+    <ul>
+        <li th:each="feel : ${feelings}" th:class="${feel.emotionName}">
+            <span th:text="${feel}"></span>
+
+<!--            Can we delete with a form method?-->
+<!--            They only GET and POST -->
+<!--            Get requests should always be idempotent-->
+<!--            they should never change the state of the world-->
+<!--            https://twitter.com/rombulow/status/990684453734203392?lang=en-->
+            <form method="POST" action="/emotions/delete">
+                <input type="hidden" th:value="${feel.id}" name="id">
+                <button>Delete this album? emotion!</button>
+            </form>
+
+            <form method="POST" action="/reasons">
+                <input type="hidden" th:value="${feel.id}" name="id">
+                <input type="text" name="reason">
+                <button>add reason</button>
+            </form>
+        </li>
+    </ul>
+</body>
+</html>
