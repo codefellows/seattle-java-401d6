@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+</head>
+<body>
+<div th:replace="fragments/nav :: banana"></div>
+<!--<div th:insert="fragments/nav :: banana"></div>-->
+<!--<div th:include="fragments/nav :: banana"></div>-->
+
+<h1>Log In</h1>
+<form action="/login" method="POST">
+    <input name="username" />
+    <input name="password" type="password" />
+    <input type="submit" />
+</form>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div th:replace="fragments/nav :: banana"></div>
+    <form action="addDragon" method="post">
+        <label for="color">color</label><input type="text" name="color" id="color">
+        <label for="headCount">headCount</label><input type="number" name="headCount" id="headCount">
+        <label for="element">element</label><input type="text" name="element" id="element">
+        <label for="spikes">spikes</label><input type="checkbox" name="spikes" id="spikes">
+        <input type="submit" value="create dragon">
+    </form>
+</body>
+</html>
