@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<div th:replace="fragments/nav :: banana"></div>
+<h1>Go questing</h1>
+
+<form action="/doQuest" method="post">
+    <label for="questingDragon">Questing Dragon</label>
+    <select name="questingDragon" id="questingDragon">
+        <option th:each="dragon : ${dragons}" th:text="${dragon.element}" th:value="${dragon.id}"></option>
+    </select>
+
+    <label for="quest">Does a quest for</label>
+    <select name="quest" id="quest">
+        <option th:each="dragon : ${dragons}" th:value="${dragon.id}">
+            <span th:text="${dragon.element}"></span> : <span th:text="${   dragon.quest}"></span>
+        </option>
+    </select>
+
+    <input type="submit" value="go questing">
+</form>
+</body>
+</html>
