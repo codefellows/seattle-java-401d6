@@ -2,7 +2,13 @@
 
 ## Agenda
 - Announcements
+    - Career Coaching Workshop is NOT this Friday
+        - Combining workshop 2 and workshop 3 into a single day on Nov 8
+        - Prep assignments are still spread out
+    - Feedback review
 - Code review: Midterm Projects
+    - What we've learned
+    - What we're going to learn
 - Lecture
     - Android Studio intro/reminders & WYSIWYG editor
     - Event listeners: they're the same as in JS
