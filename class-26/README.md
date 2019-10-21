@@ -9,6 +9,25 @@
     - Activity instance methods and Intents
 - Lab intro
 
+
+## Feedback Review
+
+### The Good/Most Helpful
+
+- Labs to look back on
+- Instructors being available/helpful during project week
+    - <3
+
+### The Constructive/Least Helpful
+
+- Spring Auth is annoying, don't know the details of how it works/is put together
+    - realistically, that's fine
+    - we'll see a bit more with Cognito later, but... implementing a login system from scratch is usually not the right answer.
+- Projects were hard but rewarding
+    - excellent
+- Hard to find time for meetups
+    - Usually, meetups are a good use of time--if you need to leave lecture or code challenge time early, I'll generally support you!
+
 ## Warmup Question
 1. You're writing frontend JavaScript, and you want to console.log when a button is clicked. What do you need to do?
 
