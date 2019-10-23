@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Buy Cheap Stuff</string>
+    <string name="what_do_you_want_to_buy">What do you want to buy?</string>
+    <string name="cheap_stuff">Cheap Stuff</string>
+    <string name="submit">Submit</string>
+    <string name="star">star</string>
+    <string name="_10_000">$10,000</string>
+    <string name="buy_it">Buy it</string>
+    <string name="whatever_you_typed_should_be_here">whatever you typed should be here</string>
+    <string name="save">SAVE</string>
+</resources>
