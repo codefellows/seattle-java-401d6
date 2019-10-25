@@ -10,7 +10,7 @@ public class MergeSort {
         if (input.length < 2) {
             return input;
         } else {
-            return merge( 
+            return merge(
                 mergeSort(Arrays.copyOfRange(input, 0, input.length / 2)),
                 mergeSort(Arrays.copyOfRange(input, input.length / 2, input.length)),
                 input
