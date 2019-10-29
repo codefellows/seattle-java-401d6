@@ -1,0 +1,5 @@
+type BuyableItem @model {
+  id: ID!
+  title: String!
+  priceInCents: Int!
+}

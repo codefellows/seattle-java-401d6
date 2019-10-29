@@ -19,24 +19,39 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.amazonaws.amplify.generated.graphql.CreateBuyableItemMutation;
+import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
+import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
+import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
+import com.apollographql.apollo.GraphQLCall;
+import com.apollographql.apollo.exception.ApolloException;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import type.CreateBuyableItemInput;
 
 public class MainActivity extends AppCompatActivity implements BuyableItemAdapter.OnBuyableItemInteractionListener {
 
     private String enteredItemName = null;
     private static final String TAG = "ferreirae.MainActivity";
 
+    private AWSAppSyncClient awsAppSyncClient;
+
     private List<BuyableItem> buyableItems;
+
+    private RecyclerView recyclerView;
 
     public void putDataOnPage(String data) {
         TextView headerTextView = findViewById(R.id.hiTextView);
@@ -59,14 +74,21 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.buyableItems = new LinkedList<>();
-        buyableItems.add(new BuyableItem("gold paperclip", 1000000));
-        buyableItems.add(new BuyableItem("silver paperclip", 800000));
-        buyableItems.add(new BuyableItem("bronze paperclip", 600000));
+       awsAppSyncClient = AWSAppSyncClient.builder()
+               .context(getApplicationContext())
+               .awsConfiguration(new AWSConfiguration(getApplicationContext()))
+               .build();
+
+//       runAddBuyableItemMutation();
+        runBuyableItemQuery();
+        this.buyableItems = new LinkedList<BuyableItem>();
+//        buyableItems.add(new BuyableItem("gold paperclip", 1000000));
+//        buyableItems.add(new BuyableItem("silver paperclip", 800000));
+//        buyableItems.add(new BuyableItem("bronze paperclip", 600000));
 
         // render the buyable items to the screen, in the RecyclerView
         // https://developer.android.com/guide/topics/ui/layout/recyclerview
-        RecyclerView recyclerView = findViewById(R.id.results);
+        recyclerView = findViewById(R.id.results);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new BuyableItemAdapter(this.buyableItems, this));
 
@@ -78,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View event) {
+                runBuyableItemQuery();
+
                 // hide keyboard
                 InputMethodManager inputManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -108,29 +132,68 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         // callback: a function to specify what should happen after the request is done/the response is here
         client.newCall(request).enqueue(new LogDataWhenItComesBackCallback(this));
 
-        // set up event listener for going to other activity
-//        Button buyActivityButton = findViewById(R.id.goToBuyActivityButton);
-//        buyActivityButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View event) {
-//                // go to the other activity
-//                // Create the intent to go to that activity and start it!
-//                Intent goToBuyActivityIntent = new Intent(MainActivity.this, BuyItem.class);
-//
-//                // add some extra info about exactly what thing is being purchased
-//                goToBuyActivityIntent.putExtra("item", enteredItemName);
-//                MainActivity.this.startActivity(goToBuyActivityIntent);
-//
-////                Intent shareThingToBuyIntent = new Intent(Intent.ACTION_SEND);
-////                EditText editText = findViewById(R.id.editText);
-////                String textThatWasTypedIn = editText.getText().toString();
-////                shareThingToBuyIntent.putExtra(Intent.EXTRA_TEXT, textThatWasTypedIn);
-////                shareThingToBuyIntent.setType("text/plain");
-////                MainActivity.this.startActivity(Intent.createChooser(shareThingToBuyIntent, "buy with..."));
-//
-//            }
-//        });
+
     }
+
+    public void runAddBuyableItemMutation(){
+        CreateBuyableItemInput createBuyableItemInput = CreateBuyableItemInput.builder()
+                .title("Dog Sweater")
+                .priceInCents((int) (Math.random() * 1000000000))
+                .build();
+        awsAppSyncClient.mutate(CreateBuyableItemMutation.builder().input(createBuyableItemInput).build())
+                .enqueue(addItemMutationCallback);
+    }
+
+    private GraphQLCall.Callback<CreateBuyableItemMutation.Data> addItemMutationCallback = new GraphQLCall.Callback<CreateBuyableItemMutation.Data>() {
+        @Override
+        public void onResponse(@Nonnull com.apollographql.apollo.api.Response<CreateBuyableItemMutation.Data> response) {
+            Log.i(TAG, "Logged some results");
+        }
+
+        @Override
+        public void onFailure(@Nonnull ApolloException e) {
+            Log.e(TAG, e.toString());
+        }
+    };
+
+    public void runBuyableItemQuery(){
+        awsAppSyncClient.query(ListBuyableItemsQuery.builder().build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(getBuyableItemsCallback);
+    }
+
+
+
+    private GraphQLCall.Callback<ListBuyableItemsQuery.Data> getBuyableItemsCallback = new GraphQLCall.Callback<ListBuyableItemsQuery.Data>() {
+        @Override
+        public void onResponse(@Nonnull final com.apollographql.apollo.api.Response<ListBuyableItemsQuery.Data> response) {
+
+            Handler handlerForMainThread = new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(Message inputMessage) {
+                    // grab data out of Message object and pass to actualMainActivityInstance
+                    List<ListBuyableItemsQuery.Item> items = response.data().listBuyableItems().items();
+                    Log.i(TAG, items.toString());
+//            MainActivity.this.buyableItems = item
+//            ListBuyableItemsQuery.Item item = items.get(0);
+                    MainActivity.this.buyableItems = new LinkedList<BuyableItem>();
+                    for(ListBuyableItemsQuery.Item item : items){
+                        MainActivity.this.buyableItems.add(new BuyableItem(item));
+                    }
+                    MainActivity.this.recyclerView.getAdapter().notifyDataSetChanged();
+                }
+            };
+
+            handlerForMainThread.obtainMessage().sendToTarget();
+
+        }
+
+        @Override
+        public void onFailure(@Nonnull ApolloException e) {
+            Log.e(TAG, e.toString());
+        }
+    };
+
 
     public void goToSettingsActivity(View v) {
         Intent i = new Intent(this, SettingsActivity.class);
