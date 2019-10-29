@@ -21,8 +21,10 @@ import android.widget.TextView;
 
 import com.amazonaws.amplify.generated.graphql.CreateBuyableItemMutation;
 import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
+import com.amazonaws.amplify.generated.graphql.OnCreateBuyableItemSubscription;
 import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
+import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.exception.ApolloException;
@@ -47,10 +49,13 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
     private String enteredItemName = null;
     private static final String TAG = "ferreirae.MainActivity";
 
+    // Add variables for the awsAppSyncClient and the subscription.
     private AWSAppSyncClient awsAppSyncClient;
+    private AppSyncSubscriptionCall<OnCreateBuyableItemSubscription.Data> subscriptionWatcher;
 
     private List<BuyableItem> buyableItems;
 
+    // Moved the recyclerView to be a
     private RecyclerView recyclerView;
 
     public void putDataOnPage(String data) {
@@ -81,10 +86,9 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
 
 //       runAddBuyableItemMutation();
         runBuyableItemQuery();
+        subscribeToBuyableItems();
         this.buyableItems = new LinkedList<BuyableItem>();
-//        buyableItems.add(new BuyableItem("gold paperclip", 1000000));
-//        buyableItems.add(new BuyableItem("silver paperclip", 800000));
-//        buyableItems.add(new BuyableItem("bronze paperclip", 600000));
+
 
         // render the buyable items to the screen, in the RecyclerView
         // https://developer.android.com/guide/topics/ui/layout/recyclerview
@@ -111,9 +115,9 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 // grab what was typed in
                 EditText editText = findViewById(R.id.editText);
                 enteredItemName = editText.getText().toString();
-                // set the text of the thing to be our buyable items
-//                TextView buyableItemsTextView = findViewById(R.id.itemTitle);
-//                buyableItemsTextView.setText(MainActivity.this.buyableItems.toString());
+
+                BuyableItem newItem = new BuyableItem(enteredItemName, (int) (Math.random() * 20000));
+                runAddBuyableItemMutation(newItem);
 
                 // show the results
                 System.out.println("it was clicked!");
@@ -135,10 +139,48 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
 
     }
 
-    public void runAddBuyableItemMutation(){
+    private void subscribeToBuyableItems(){
+        OnCreateBuyableItemSubscription subscription = OnCreateBuyableItemSubscription.builder().build();
+                subscriptionWatcher = awsAppSyncClient.subscribe(subscription);
+                subscriptionWatcher.execute(subscriptionToBuyableITemsCallback);
+    }
+
+    private AppSyncSubscriptionCall.Callback<OnCreateBuyableItemSubscription.Data> subscriptionToBuyableITemsCallback = new AppSyncSubscriptionCall.Callback<OnCreateBuyableItemSubscription.Data>() {
+        @Override
+        public void onResponse(@Nonnull final com.apollographql.apollo.api.Response<OnCreateBuyableItemSubscription.Data> response) {
+            Log.i(TAG, response.data().toString());
+            Log.i(TAG, "stuff from the subscription");
+
+            Handler handlerForMainThread = new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(Message inputMessage) {
+                    OnCreateBuyableItemSubscription.OnCreateBuyableItem item = response.data().onCreateBuyableItem();
+                        MainActivity.this.buyableItems.add(new BuyableItem(item));
+
+                    MainActivity.this.recyclerView.getAdapter().notifyDataSetChanged();
+                }
+            };
+
+            handlerForMainThread.obtainMessage().sendToTarget();
+        }
+
+        @Override
+        public void onFailure(@Nonnull ApolloException e) {
+            Log.e(TAG, e.toString());
+
+        }
+
+        @Override
+        public void onCompleted() {
+            Log.i(TAG, "Subscription completed");
+        }
+    };
+
+
+    public void runAddBuyableItemMutation(BuyableItem item){
         CreateBuyableItemInput createBuyableItemInput = CreateBuyableItemInput.builder()
-                .title("Dog Sweater")
-                .priceInCents((int) (Math.random() * 1000000000))
+                .title(item.getTitle())
+                .priceInCents(item.getPriceInCents())
                 .build();
         awsAppSyncClient.mutate(CreateBuyableItemMutation.builder().input(createBuyableItemInput).build())
                 .enqueue(addItemMutationCallback);
@@ -171,12 +213,10 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
             Handler handlerForMainThread = new Handler(Looper.getMainLooper()) {
                 @Override
                 public void handleMessage(Message inputMessage) {
-                    // grab data out of Message object and pass to actualMainActivityInstance
                     List<ListBuyableItemsQuery.Item> items = response.data().listBuyableItems().items();
                     Log.i(TAG, items.toString());
-//            MainActivity.this.buyableItems = item
-//            ListBuyableItemsQuery.Item item = items.get(0);
-                    MainActivity.this.buyableItems = new LinkedList<BuyableItem>();
+
+                    MainActivity.this.buyableItems.clear();
                     for(ListBuyableItemsQuery.Item item : items){
                         MainActivity.this.buyableItems.add(new BuyableItem(item));
                     }
@@ -221,7 +261,7 @@ class LogDataWhenItComesBackCallback implements Callback {
     // OkHttp will call this if the request fails
     @Override
     public void onFailure(@NotNull Call call, @NotNull IOException e) {
-        Log.e(TAG, "internet error");
+        Log.e(TAG, "internet     error");
         Log.e(TAG, e.getMessage());
     }
 

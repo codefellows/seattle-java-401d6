@@ -1,6 +1,7 @@
 package com.ferreirae.buycheapstuff;
 
 import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
+import com.amazonaws.amplify.generated.graphql.OnCreateBuyableItemSubscription;
 
 import java.text.DecimalFormat;
 
@@ -17,6 +18,12 @@ public class BuyableItem {
         this.title = item.title();
         this.priceInCents = item.priceInCents();
     }
+
+    public BuyableItem(OnCreateBuyableItemSubscription.OnCreateBuyableItem item){
+        this.title = item.title();
+        this.priceInCents = item.priceInCents();
+    }
+
 
     public String getTitle() {
         return title;
