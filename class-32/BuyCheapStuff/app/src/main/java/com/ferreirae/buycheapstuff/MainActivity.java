@@ -19,17 +19,28 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.amazonaws.amplify.generated.graphql.CreateBuyableItemMutation;
+import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
+import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
+import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
+import com.apollographql.apollo.GraphQLCall;
+import com.apollographql.apollo.exception.ApolloException;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import type.CreateBuyableItemInput;
 
 public class MainActivity extends AppCompatActivity implements BuyableItemAdapter.OnBuyableItemInteractionListener {
 
@@ -37,6 +48,12 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
     private static final String TAG = "ferreirae.MainActivity";
 
     private List<BuyableItem> buyableItems;
+
+    //Class variable for recyclerView
+    RecyclerView recyclerView;
+
+    //AWS
+    AWSAppSyncClient awsAppSyncClient;
 
     public void putDataOnPage(String data) {
         TextView headerTextView = findViewById(R.id.hiTextView);
@@ -60,17 +77,23 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         setContentView(R.layout.activity_main);
 
         this.buyableItems = new LinkedList<>();
-        buyableItems.add(new BuyableItem("gold paperclip", 1000000));
-        buyableItems.add(new BuyableItem("silver paperclip", 800000));
-        buyableItems.add(new BuyableItem("bronze paperclip", 600000));
+
+        // Build a connection to AWS
+        awsAppSyncClient = AWSAppSyncClient.builder()
+                .context(getApplicationContext())
+                .awsConfiguration(new AWSConfiguration(getApplicationContext()))
+                .build();
+
+        // run graphql query for all data
+        queryAllBuyableItems();
+
 
         // render the buyable items to the screen, in the RecyclerView
         // https://developer.android.com/guide/topics/ui/layout/recyclerview
-        RecyclerView recyclerView = findViewById(R.id.results);
+        recyclerView = findViewById(R.id.results);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new BuyableItemAdapter(this.buyableItems, this));
 
-        // when the button is clicked, show the thing whose id is results
 
         // grab the button, using its ID and the generated R (resource) info
         Button button = findViewById(R.id.button);
@@ -87,12 +110,10 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 // grab what was typed in
                 EditText editText = findViewById(R.id.editText);
                 enteredItemName = editText.getText().toString();
-                // set the text of the thing to be our buyable items
-//                TextView buyableItemsTextView = findViewById(R.id.itemTitle);
-//                buyableItemsTextView.setText(MainActivity.this.buyableItems.toString());
 
-                // show the results
-                System.out.println("it was clicked!");
+                // tell graphql to add the item
+                runAddBuyableItemMutation(enteredItemName);
+
                 MainActivity.this.findViewById(R.id.results).setVisibility(View.VISIBLE);
             }
         });
@@ -106,31 +127,108 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 .build();
 
         // callback: a function to specify what should happen after the request is done/the response is here
-        client.newCall(request).enqueue(new LogDataWhenItComesBackCallback(this));
+//        client.newCall(request).enqueue(new LogDataWhenItComesBackCallback(this));
 
-        // set up event listener for going to other activity
-//        Button buyActivityButton = findViewById(R.id.goToBuyActivityButton);
-//        buyActivityButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View event) {
-//                // go to the other activity
-//                // Create the intent to go to that activity and start it!
-//                Intent goToBuyActivityIntent = new Intent(MainActivity.this, BuyItem.class);
-//
-//                // add some extra info about exactly what thing is being purchased
-//                goToBuyActivityIntent.putExtra("item", enteredItemName);
-//                MainActivity.this.startActivity(goToBuyActivityIntent);
-//
-////                Intent shareThingToBuyIntent = new Intent(Intent.ACTION_SEND);
-////                EditText editText = findViewById(R.id.editText);
-////                String textThatWasTypedIn = editText.getText().toString();
-////                shareThingToBuyIntent.putExtra(Intent.EXTRA_TEXT, textThatWasTypedIn);
-////                shareThingToBuyIntent.setType("text/plain");
-////                MainActivity.this.startActivity(Intent.createChooser(shareThingToBuyIntent, "buy with..."));
-//
-//            }
-//        });
     }
+
+
+    // Code to insert a new item using a mutation
+    // we pass in the fields to the CreateBuyableItemInput, create a mutation with that input, and then tell aws to run a mutation with it
+    public void runAddBuyableItemMutation(String enteredItemName){
+        CreateBuyableItemInput createBuyableItemInput =CreateBuyableItemInput.builder()
+                .title(enteredItemName)
+                .priceInCents(400000)
+                .build();
+        awsAppSyncClient.mutate(CreateBuyableItemMutation.builder().input(createBuyableItemInput).build())
+            .enqueue(addBuyableItemCallBack);
+    }
+
+    // callback for when aws is done adding an item
+    // graphql will return to us the thing that was created
+    // it will live in response.data().createBuyableItem()
+    public GraphQLCall.Callback<CreateBuyableItemMutation.Data> addBuyableItemCallBack = new GraphQLCall.Callback<CreateBuyableItemMutation.Data>() {
+        @Override
+        public void onResponse(@Nonnull final com.apollographql.apollo.api.Response<CreateBuyableItemMutation.Data> response) {
+            Log.i("graphql insert", "added a buyable item");
+
+            Handler handlerForMainThread = new Handler(Looper.getMainLooper()){
+                @Override
+                public void handleMessage(Message inputMessage){
+
+
+
+                    // The code that we insert into the call back to do work for us
+                    Log.i("graphql insert", "made it to the callback");
+                    //grab the data
+                    CreateBuyableItemMutation.CreateBuyableItem item = response.data().createBuyableItem();
+                    //make a new buyable item with it
+                    buyableItems.add(new BuyableItem(item));
+                    recyclerView.getAdapter().notifyDataSetChanged();
+
+                }
+            };
+
+            handlerForMainThread.obtainMessage().sendToTarget();
+
+
+        }
+
+        @Override
+        public void onFailure(@Nonnull ApolloException e) {
+            Log.e("graphql insert", e.getMessage());
+        }
+    };
+
+
+    // Query the dynamo db
+    public void queryAllBuyableItems(){
+        awsAppSyncClient.query(ListBuyableItemsQuery.builder().build())
+                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+                .enqueue(getAllBuyableItemsCallback);
+    }
+
+    public GraphQLCall.Callback<ListBuyableItemsQuery.Data> getAllBuyableItemsCallback = new GraphQLCall.Callback<ListBuyableItemsQuery.Data>() {
+        @Override
+        public void onResponse(@Nonnull final com.apollographql.apollo.api.Response<ListBuyableItemsQuery.Data> response) {
+            Log.i("graphqlgetall", response.data().listBuyableItems().items().toString());
+
+            // Instead of declaring an external handler class, declare one in the onResponse
+            // this will have access to the instance variables of our MainActivity
+            Handler handlerForMainThread = new Handler(Looper.getMainLooper()){
+                @Override
+                public void handleMessage(Message inputMessage){
+
+                    // The code that actually displays things to the screem
+                    Log.i("graphqlgettall", "made it to the callback");
+                    List<ListBuyableItemsQuery.Item> items = response.data().listBuyableItems().items();
+                    buyableItems.clear();
+                    for(ListBuyableItemsQuery.Item item : items){
+                        buyableItems.add(new BuyableItem(item));
+                    }
+                    recyclerView.getAdapter().notifyDataSetChanged();
+
+
+                }
+            };
+
+            handlerForMainThread.obtainMessage().sendToTarget();
+
+
+        }
+
+        @Override
+        public void onFailure(@Nonnull ApolloException e) {
+            Log.e("graphqlgetall", e.getMessage());
+        }
+    };
+
+
+
+
+
+
+
+
 
     public void goToSettingsActivity(View v) {
         Intent i = new Intent(this, SettingsActivity.class);
