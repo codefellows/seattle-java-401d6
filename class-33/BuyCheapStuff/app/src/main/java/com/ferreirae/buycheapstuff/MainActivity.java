@@ -21,8 +21,10 @@ import android.widget.TextView;
 
 import com.amazonaws.amplify.generated.graphql.CreateBuyableItemMutation;
 import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
+import com.amazonaws.amplify.generated.graphql.OnCreateBuyableItemSubscription;
 import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
+import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall;
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
 import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.exception.ApolloException;
@@ -49,8 +51,9 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
 
     private List<BuyableItem> buyableItems;
 
-    //Class variable for recyclerView
+    //Instance  variable for recyclerView
     RecyclerView recyclerView;
+    BuyableItemAdapter buyableItemAdapter;
 
     //AWS
     AWSAppSyncClient awsAppSyncClient;
@@ -76,8 +79,6 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.buyableItems = new LinkedList<>();
-
         // Build a connection to AWS
         awsAppSyncClient = AWSAppSyncClient.builder()
                 .context(getApplicationContext())
@@ -87,12 +88,41 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         // run graphql query for all data
         queryAllBuyableItems();
 
+        // subscribe to future updates
+        Log.i(TAG, "trying to subscribe");
+        OnCreateBuyableItemSubscription subscription = OnCreateBuyableItemSubscription.builder().build();
+        awsAppSyncClient.subscribe(subscription).execute(new AppSyncSubscriptionCall.Callback<OnCreateBuyableItemSubscription.Data>() {
+            @Override
+            public void onResponse(@Nonnull com.apollographql.apollo.api.Response<OnCreateBuyableItemSubscription.Data> response) {
+                // hey you have something
+                // AWS calls this method when a new BuyableItem is created
+                Log.i(TAG, "new data added");
+                BuyableItem newItem = new BuyableItem(response.data().onCreateBuyableItem().title(), response.data().onCreateBuyableItem().priceInCents());
+                buyableItemAdapter.addItem(newItem);
+
+            }
+
+            @Override
+            public void onFailure(@Nonnull ApolloException e) {
+                Log.i(TAG, e.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                // good job you subscribed gold star
+                Log.i(TAG, "subscribed to buyable items");
+            }
+        });
+
 
         // render the buyable items to the screen, in the RecyclerView
         // https://developer.android.com/guide/topics/ui/layout/recyclerview
+        // this.buyableItems will be empty until we get the data from GraphQL
+        this.buyableItems = new LinkedList<>();
         recyclerView = findViewById(R.id.results);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new BuyableItemAdapter(this.buyableItems, this));
+        this.buyableItemAdapter = new BuyableItemAdapter(this.buyableItems, this);
+        recyclerView.setAdapter(this.buyableItemAdapter);
 
 
         // grab the button, using its ID and the generated R (resource) info
@@ -117,17 +147,6 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 MainActivity.this.findViewById(R.id.results).setVisibility(View.VISIBLE);
             }
         });
-
-        // get data from the internet
-        // https://square.github.io/okhttp/
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url("http://taskmaster-api.herokuapp.com/tasks")
-                .build();
-
-        // callback: a function to specify what should happen after the request is done/the response is here
-//        client.newCall(request).enqueue(new LogDataWhenItComesBackCallback(this));
 
     }
 
@@ -199,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 public void handleMessage(Message inputMessage){
 
                     // The code that actually displays things to the screem
-                    Log.i("graphqlgettall", "made it to the callback");
+                    Log.i("graphqlgetall", "made it to the callback");
                     List<ListBuyableItemsQuery.Item> items = response.data().listBuyableItems().items();
                     buyableItems.clear();
                     for(ListBuyableItemsQuery.Item item : items){
@@ -221,12 +240,6 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
             Log.e("graphqlgetall", e.getMessage());
         }
     };
-
-
-
-
-
-
 
 
 

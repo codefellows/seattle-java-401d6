@@ -1,0 +1,21 @@
+
+// remove a number from a list
+
+public static Node remove(int toBeRemoved, Node head) {
+  if (head == null) return head;
+  else if (head.value == toBeRemoved) return remove(toBeRemoved, head.next);
+  else {
+    head.next = remove(toBeRemoved, head.next);
+    return head;
+  }
+}
+
+public static Node removeDuplicates(Node head) {
+  if (head == null) return head;
+  else {
+    // remove current value from the rest of the list, then remove duplicates from the rest of the list
+    head.next = removeDuplicates(remove(head.value, head.next));
+    return head;
+  }
+}
+

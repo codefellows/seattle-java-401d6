@@ -20,6 +20,11 @@ class BuyableItemAdapter extends RecyclerView.Adapter<BuyableItemAdapter.Buyable
         this.listener = listener;
     }
 
+    public void addItem(BuyableItem item) {
+        this.items.add(0, item);
+        this.notifyItemInserted(0);
+    }
+
     public static class BuyableItemViewHolder extends RecyclerView.ViewHolder {
         BuyableItem item;
         TextView itemTitleView;
