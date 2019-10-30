@@ -1,4 +1,6 @@
+<!-- markdownlint-disable MD026 -->
 # Lecture 31: To The Internet!
+<!-- markdownlint-enable MD026 -->
 
 ## Agenda
 
