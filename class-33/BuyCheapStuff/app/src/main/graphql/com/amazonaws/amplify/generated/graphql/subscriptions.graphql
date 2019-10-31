@@ -4,6 +4,13 @@ subscription OnCreateBuyableItem {
     id
     title
     priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
   }
 }
 subscription OnUpdateBuyableItem {
@@ -11,6 +18,13 @@ subscription OnUpdateBuyableItem {
     id
     title
     priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
   }
 }
 subscription OnDeleteBuyableItem {
@@ -18,5 +32,54 @@ subscription OnDeleteBuyableItem {
     id
     title
     priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
+  }
+}
+subscription OnCreateCollection {
+  onCreateCollection {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}
+subscription OnUpdateCollection {
+  onUpdateCollection {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}
+subscription OnDeleteCollection {
+  onDeleteCollection {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
   }
 }

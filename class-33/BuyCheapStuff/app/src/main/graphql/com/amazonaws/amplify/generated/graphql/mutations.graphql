@@ -4,6 +4,13 @@ mutation CreateBuyableItem($input: CreateBuyableItemInput!) {
     id
     title
     priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
   }
 }
 mutation UpdateBuyableItem($input: UpdateBuyableItemInput!) {
@@ -11,6 +18,13 @@ mutation UpdateBuyableItem($input: UpdateBuyableItemInput!) {
     id
     title
     priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
   }
 }
 mutation DeleteBuyableItem($input: DeleteBuyableItemInput!) {
@@ -18,5 +32,54 @@ mutation DeleteBuyableItem($input: DeleteBuyableItemInput!) {
     id
     title
     priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
+  }
+}
+mutation CreateCollection($input: CreateCollectionInput!) {
+  createCollection(input: $input) {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}
+mutation UpdateCollection($input: UpdateCollectionInput!) {
+  updateCollection(input: $input) {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}
+mutation DeleteCollection($input: DeleteCollectionInput!) {
+  deleteCollection(input: $input) {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
   }
 }

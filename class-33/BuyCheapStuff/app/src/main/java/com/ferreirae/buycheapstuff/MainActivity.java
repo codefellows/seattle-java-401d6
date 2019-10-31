@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.amazonaws.amplify.generated.graphql.CreateBuyableItemMutation;
 import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
+import com.amazonaws.amplify.generated.graphql.ListCollectionsQuery;
 import com.amazonaws.amplify.generated.graphql.OnCreateBuyableItemSubscription;
 import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
@@ -32,6 +33,7 @@ import com.apollographql.apollo.exception.ApolloException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -97,14 +99,22 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 // hey you have something
                 // AWS calls this method when a new BuyableItem is created
                 Log.i(TAG, "new data added");
-                BuyableItem newItem = new BuyableItem(response.data().onCreateBuyableItem().title(), response.data().onCreateBuyableItem().priceInCents());
-                buyableItemAdapter.addItem(newItem);
+                final BuyableItem newItem = new BuyableItem(response.data().onCreateBuyableItem().title(), response.data().onCreateBuyableItem().priceInCents());
+                Handler handler = new Handler(Looper.getMainLooper()) {
+                    @Override
+                    public void handleMessage(Message inputMessage) {
+                        buyableItemAdapter.addItem(newItem);
+                    }
+                };
+
+                handler.obtainMessage().sendToTarget();
 
             }
 
             @Override
             public void onFailure(@Nonnull ApolloException e) {
-                Log.i(TAG, e.getMessage());
+                Log.i(TAG, Arrays.toString(e.getStackTrace()));
+                Log.i(TAG, e.getCause().getMessage());
             }
 
             @Override
@@ -245,6 +255,11 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
 
     public void goToSettingsActivity(View v) {
         Intent i = new Intent(this, SettingsActivity.class);
+        this.startActivity(i);
+    }
+
+    public void goToCollectionsActivity(View v) {
+        Intent i = new Intent(this, CollectionActivity.class);
         this.startActivity(i);
     }
 

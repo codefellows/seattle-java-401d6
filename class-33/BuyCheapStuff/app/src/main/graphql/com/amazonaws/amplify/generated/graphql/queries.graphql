@@ -4,6 +4,13 @@ query GetBuyableItem($id: ID!) {
     id
     title
     priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
   }
 }
 query ListBuyableItems(
@@ -16,6 +23,40 @@ query ListBuyableItems(
       id
       title
       priceInCents
+      collection {
+        id
+        title
+      }
+    }
+    nextToken
+  }
+}
+query GetCollection($id: ID!) {
+  getCollection(id: $id) {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}
+query ListCollections(
+  $filter: ModelCollectionFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listCollections(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      title
+      items {
+        nextToken
+      }
     }
     nextToken
   }
