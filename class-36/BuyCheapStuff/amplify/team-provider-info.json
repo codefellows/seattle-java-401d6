@@ -1,0 +1,26 @@
+{
+    "local": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-buycheapstuff-local-153108-authRole",
+            "UnauthRoleArn": "arn:aws:iam::743080406423:role/amplify-buycheapstuff-local-153108-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::743080406423:role/amplify-buycheapstuff-local-153108-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-buycheapstuff-local-153108-deployment",
+            "UnauthRoleName": "amplify-buycheapstuff-local-153108-unauthRole",
+            "StackName": "amplify-buycheapstuff-local-153108",
+            "StackId": "arn:aws:cloudformation:us-west-2:743080406423:stack/amplify-buycheapstuff-local-153108/cd760710-fa9b-11e9-9d46-0294f1fd1ce8"
+        }
+    },
+    "mnf": {
+        "awscloudformation": {
+            "AuthRoleName": "buycheapstuff-mnf-20191030112003-authRole",
+            "UnauthRoleArn": "arn:aws:iam::092793752763:role/buycheapstuff-mnf-20191030112003-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::092793752763:role/buycheapstuff-mnf-20191030112003-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "buycheapstuff-mnf-20191030112003-deployment",
+            "UnauthRoleName": "buycheapstuff-mnf-20191030112003-unauthRole",
+            "StackName": "buycheapstuff-mnf-20191030112003",
+            "StackId": "arn:aws:cloudformation:us-west-2:092793752763:stack/buycheapstuff-mnf-20191030112003/e44194e0-fb41-11e9-891f-0293beb9191e"
+        }
+    }
+}
