@@ -4,6 +4,8 @@
 
 - Announcements
   - I've started sending out schedules for whiteboarding!
+  - CCW on Friday
+    - all career coaching assignments should be completed/will be locked!
 - Code review
 - Lecture
   - what is S3
