@@ -22,5 +22,22 @@
             "StackName": "buycheapstuff-mnf-20191030112003",
             "StackId": "arn:aws:cloudformation:us-west-2:092793752763:stack/buycheapstuff-mnf-20191030112003/e44194e0-fb41-11e9-891f-0293beb9191e"
         }
+    },
+    "nicholas": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-buycheapstuff-nicholas-145132-authRole",
+            "UnauthRoleArn": "arn:aws:iam::743080406423:role/amplify-buycheapstuff-nicholas-145132-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::743080406423:role/amplify-buycheapstuff-nicholas-145132-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "amplify-buycheapstuff-nicholas-145132-deployment",
+            "UnauthRoleName": "amplify-buycheapstuff-nicholas-145132-unauthRole",
+            "StackName": "amplify-buycheapstuff-nicholas-145132",
+            "StackId": "arn:aws:cloudformation:us-west-2:743080406423:stack/amplify-buycheapstuff-nicholas-145132/a5522d40-ff55-11e9-b7ad-0a95a0468cc2"
+        },
+        "categories": {
+            "auth": {
+                "buycheapstuff906428b1": {}
+            }
+        }
     }
 }

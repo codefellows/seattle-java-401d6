@@ -16,5 +16,12 @@
 				}
 			}
 		}
+	},
+	"auth": {
+		"buycheapstuff906428b1": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
 	}
 }

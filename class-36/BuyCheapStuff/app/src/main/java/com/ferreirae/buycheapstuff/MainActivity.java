@@ -23,6 +23,9 @@ import com.amazonaws.amplify.generated.graphql.CreateBuyableItemMutation;
 import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
 import com.amazonaws.amplify.generated.graphql.ListCollectionsQuery;
 import com.amazonaws.amplify.generated.graphql.OnCreateBuyableItemSubscription;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.SignInUIOptions;
+import com.amazonaws.mobile.client.UserStateDetails;
 import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
 import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall;
@@ -68,10 +71,17 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
     protected void onResume() {
         super.onResume();
         // grab username from sharedprefs and use it to update the label
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String username = prefs.getString("username", "user");
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        String username = prefs.getString("username", "user");
+
+        String username = AWSMobileClient.getInstance().getUsername();
+
         TextView nameTextView = findViewById(R.id.hiTextView);
         nameTextView.setText("Hi, " + username + "!");
+
+
+
+
     }
 
     // gets called automatically when the MainActivity is created/shown for the first time
@@ -80,6 +90,35 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         // these will always be here, every time, thanks Android
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        AWSMobileClient.getInstance().initialize(getApplicationContext(), new com.amazonaws.mobile.client.Callback<UserStateDetails>() {
+            @Override
+            public void onResult(UserStateDetails result) {
+                Log.i("ncarignan.login", result.getUserState().toString());
+                if(result.getUserState().toString().equals("SIGNED_OUT")){
+                    AWSMobileClient.getInstance().showSignIn(MainActivity.this,
+                            SignInUIOptions.builder().backgroundColor(1).logo(R.drawable.tv_scooby_doo_2b).build(),
+                            new com.amazonaws.mobile.client.Callback<UserStateDetails>() {
+                                @Override
+                                public void onResult(UserStateDetails result) {
+                                    Log.i("ncarignan.signin", result.getUserState().toString());
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Log.e("ncarignan.signin", e.getMessage());
+                                }
+                            });
+                }
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e("ncarignan.login", e.getMessage());
+            }
+        });
 
         // Build a connection to AWS
         awsAppSyncClient = AWSAppSyncClient.builder()
@@ -155,6 +194,48 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 runAddBuyableItemMutation(enteredItemName);
 
                 MainActivity.this.findViewById(R.id.results).setVisibility(View.VISIBLE);
+            }
+        });
+
+        // Handle a button click for logout
+        // need a listener
+        // stuff happens in the listener (signout)
+        // need to connect it to a button
+        Button signoutButton = findViewById(R.id.signout);
+        signoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View event) {
+                String username = AWSMobileClient.getInstance().getUsername();
+
+                AWSMobileClient.getInstance().signOut();
+
+                TextView hiView = findViewById(R.id.hiTextView);
+                hiView.setText("Bye " + username +"!");
+
+//                MainActivity.this.();
+            }
+        });
+
+        Button signinButton = findViewById(R.id.signin);
+        signinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View event) {
+                AWSMobileClient.getInstance().showSignIn(MainActivity.this,
+                        SignInUIOptions.builder().backgroundColor(1).logo(R.drawable.tv_scooby_doo_2b).build(),
+                        new com.amazonaws.mobile.client.Callback<UserStateDetails>() {
+                    @Override
+                    public void onResult(UserStateDetails result) {
+                        Log.i("ncarignan.signin", result.getUserState().toString());
+                        Log.i("ncarignan.signin", AWSMobileClient.getInstance().currentUserState().getUserState().toString());
+                        Log.i("ncarignan.signin", AWSMobileClient.getInstance().currentUserState().getDetails().toString());
+                        Log.i("ncarignan.signin", AWSMobileClient.getInstance().getUsername());
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Log.e("ncarignan.signin", e.getMessage());
+                    }
+                });
             }
         });
 
