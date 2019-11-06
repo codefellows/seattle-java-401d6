@@ -5,9 +5,11 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -51,6 +53,7 @@ import type.CreateBuyableItemInput;
 
 public class MainActivity extends AppCompatActivity implements BuyableItemAdapter.OnBuyableItemInteractionListener {
 
+    private static final int READ_REQUEST_CODE = 42;
     private String enteredItemName = null;
     private static final String TAG = "ferreirae.MainActivity";
 
@@ -333,6 +336,34 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
     };
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+
+        // The ACTION_OPEN_DOCUMENT intent was sent with the request code
+        // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
+        // response to some other intent, and the code below shouldn't run at all.
+
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // The document selected by the user won't be returned in the intent.
+            // Instead, a URI to that document will be contained in the return intent
+            // provided to this method as a parameter.
+            // Pull that URI using resultData.getData().
+            Uri uri = null;
+            if (resultData != null) {
+                uri = resultData.getData();
+                Log.i(TAG, "Uri: " + uri.toString());
+//                showImage(uri);
+            }
+        }
+    }
+    public void pickFile(View v) {
+        //https://developer.android.com/guide/topics/providers/document-provider
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
+        startActivityForResult(i, READ_REQUEST_CODE);
+    }
 
     public void goToSettingsActivity(View v) {
         Intent i = new Intent(this, SettingsActivity.class);
