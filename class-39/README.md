@@ -3,6 +3,7 @@
 ## Agenda
 
 - Announcements
+  - Tomorrow in Hopper, then Babbage!
 - Code review
 - Lecture
   - Intro to SNS
