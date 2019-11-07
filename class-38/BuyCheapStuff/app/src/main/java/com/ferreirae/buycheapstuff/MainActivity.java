@@ -2,15 +2,18 @@ package com.ferreirae.buycheapstuff;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -24,6 +27,7 @@ import android.widget.TextView;
 
 import com.amazonaws.amplify.generated.graphql.CreateBuyableItemMutation;
 import com.amazonaws.amplify.generated.graphql.ListBuyableItemsQuery;
+import com.amazonaws.amplify.generated.graphql.ListCollectionsQuery;
 import com.amazonaws.amplify.generated.graphql.OnCreateBuyableItemSubscription;
 import com.amazonaws.mobile.client.AWSMobileClient;
 import com.amazonaws.mobile.client.SignInUIOptions;
@@ -44,7 +48,10 @@ import com.apollographql.apollo.exception.ApolloException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,11 +89,18 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
     @Override
     protected void onResume() {
         super.onResume();
+        // grab username from sharedprefs and use it to update the label
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        String username = prefs.getString("username", "user");
 
         String username = AWSMobileClient.getInstance().getUsername();
 
         TextView nameTextView = findViewById(R.id.hiTextView);
         nameTextView.setText("Hi, " + username + "!");
+
+
+
+
     }
 
     // gets called automatically when the MainActivity is created/shown for the first time
@@ -97,8 +111,8 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         setContentView(R.layout.activity_main);
 
         getApplicationContext().startService(new Intent(getApplicationContext(), TransferService.class));
-        String[] permissions = {READ_EXTERNAL_STORAGE};
-        ActivityCompat.requestPermissions(this, permissions, 1);
+
+        ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE}, 10);
 
         AWSMobileClient.getInstance().initialize(getApplicationContext(), new com.amazonaws.mobile.client.Callback<UserStateDetails>() {
             @Override
@@ -344,12 +358,12 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent resultData) {
+        super.onActivityResult(requestCode, resultCode, resultData);
 
         // The ACTION_OPEN_DOCUMENT intent was sent with the request code
         // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the
         // response to some other intent, and the code below shouldn't run at all.
 
-        super.onActivityResult(requestCode, resultCode, resultData);
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // The document selected by the user won't be returned in the intent.
             // Instead, a URI to that document will be contained in the return intent
@@ -359,8 +373,7 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
             if (resultData != null) {
                 uri = resultData.getData();
                 Log.i(TAG, "Uri: " + uri.toString());
-                // actually get path from URI
-                Uri selectedImage = uri;
+                Uri selectedImage = resultData.getData();
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
                 Cursor cursor = getContentResolver().query(selectedImage,
                         filePathColumn, null, null, null);
@@ -368,45 +381,42 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
                 cursor.close();
-
                 TransferUtility transferUtility =
                         TransferUtility.builder()
                                 .context(getApplicationContext())
                                 .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
                                 .s3Client(new AmazonS3Client(AWSMobileClient.getInstance()))
                                 .build();
-                TransferObserver uploadObserver =
-                        transferUtility.upload(
-                                // filename in the cloud
-                                "public/picolas",
-                                new File(picturePath));
+                    TransferObserver uploadObserver =
+                            transferUtility.upload("public/sample", new File(picturePath));
+                    uploadObserver.setTransferListener(new TransferListener() {
 
-                // Attach a listener to the observer to get state update and progress notifications
-                uploadObserver.setTransferListener(new TransferListener() {
-
-                    @Override
-                    public void onStateChanged(int id, TransferState state) {
-                        if (TransferState.COMPLETED == state) {
-                            // Handle a completed upload.
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            if (TransferState.COMPLETED == state) {
+                                Log.d(TAG, "Completed the transfer");
+                            } else {
+                                Log.d(TAG, "Transfer in state" + state);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-                        float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
-                        int percentDone = (int)percentDonef;
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            float percentDonef = ((float) bytesCurrent / (float) bytesTotal) * 100;
+                            int percentDone = (int)percentDonef;
 
-                        Log.d(TAG, "ID:" + id + " bytesCurrent: " + bytesCurrent
-                                + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
-                    }
+                            Log.d(TAG, "ID:" + id + " bytesCurrent: " + bytesCurrent
+                                    + " bytesTotal: " + bytesTotal + " " + percentDone + "%");
+                        }
 
-                    @Override
-                    public void onError(int id, Exception ex) {
-                        // Handle errors
-                    }
+                        @Override
+                        public void onError(int id, Exception ex) {
+                            Log.e(TAG, ex.getMessage());
+                        }
 
-                });
-//                showImage(uri);
+                    });
+
+
             }
         }
     }
