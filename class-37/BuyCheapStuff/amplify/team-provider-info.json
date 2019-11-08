@@ -25,6 +25,13 @@
         "categories": {
             "auth": {
                 "buycheapstuff906428b1": {}
+            },
+            "notifications": {
+                "Pinpoint": {
+                    "Name": "BuyCheapStuffQY7kc-mnf",
+                    "Id": "7c9130bae07845d48d9ea8d155b03f42",
+                    "Region": "us-west-2"
+                }
             }
         }
     },

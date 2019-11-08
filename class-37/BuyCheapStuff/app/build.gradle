@@ -22,6 +22,8 @@ android {
 apply plugin: 'com.amazonaws.appsync'
 
 dependencies {
+
+    implementation 'com.google.android.gms:play-services-auth:16.0.0'
     //Base SDK
     implementation 'com.amazonaws:aws-android-sdk-core:2.15.+'
     implementation 'com.amazonaws:aws-android-sdk-s3:2.15.+'
@@ -29,6 +31,12 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-appsync:2.8.+'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0'
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+
+
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-messaging:17.3.0'
+
+    implementation 'com.amazonaws:aws-android-sdk-pinpoint:2.15.+'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -49,3 +57,5 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-auth-userpools:2.15.+'
     implementation 'com.amazonaws:aws-android-sdk-auth-ui:2.15.+'
 }
+
+apply plugin: 'com.google.gms.google-services'

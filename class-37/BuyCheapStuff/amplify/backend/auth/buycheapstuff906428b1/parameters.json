@@ -1,6 +1,6 @@
 {
     "identityPoolName": "buycheapstuff906428b1_identitypool_906428b1",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "buyche906428b1",
     "userPoolName": "buycheapstuff906428b1_userpool_906428b1",
     "autoVerifiedAttributes": [

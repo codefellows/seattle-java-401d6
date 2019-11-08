@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "812247975541",
+    "firebase_url": "https://buy-cheap-stuff.firebaseio.com",
+    "project_id": "buy-cheap-stuff",
+    "storage_bucket": "buy-cheap-stuff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812247975541:android:f5265cdb1db58d0633da3c",
+        "android_client_info": {
+          "package_name": "com.ferreirae.buycheapstuff"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812247975541-7ikovsuh7e9q71ks099l0944a6ctu1ij.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL2BcS-FIh8a32J3vuZpMDK0IvmfMnLzo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812247975541-7ikovsuh7e9q71ks099l0944a6ctu1ij.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
