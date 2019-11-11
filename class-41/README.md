@@ -16,7 +16,6 @@
 - Career Coaching workshops
   - hooray!
   - Some wishing that it had been earlier... good to note!
-  - 
 - Building out a single app for many weeks
   - Even with the difficulty of being behing, it's still worth it!
   - This is awesome!
