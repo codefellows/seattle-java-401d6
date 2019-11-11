@@ -1,0 +1,11 @@
+type BuyableItem @model {
+  id: ID!
+  title: String!
+  priceInCents: Int!
+  collection: Collection @connection(name:"CollectionItems")
+}
+type Collection @model {
+  id: ID!
+  title: String!
+  items: [BuyableItem] @connection(name:"CollectionItems")
+}
