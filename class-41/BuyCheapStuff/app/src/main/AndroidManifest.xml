@@ -28,12 +28,23 @@
         </service>
         <activity android:name=".CollectionActivity"></activity>
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".BuyItem" />
+        <activity android:name=".BuyItem" >
+            <intent-filter android:label="Buy Item">
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter android:label="Search for Item">
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
     </application>

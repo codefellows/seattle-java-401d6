@@ -254,6 +254,13 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
             }
         });
 
+        // update search box if a share
+        if (Intent.ACTION_SEND.equals(getIntent().getAction())) {
+            // use Intent.EXTRA_TEXT to access the shared text
+            String itemName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            EditText searchBox = findViewById(R.id.editText);
+            searchBox.setText(itemName);
+        }
     }
 
 
