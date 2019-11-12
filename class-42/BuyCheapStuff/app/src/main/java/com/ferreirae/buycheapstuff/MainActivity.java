@@ -443,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                         wayLongitude = location.getLongitude();
                         Log.i("ncarignan.location", String.format(Locale.US, "%s -- %s", wayLatitude, wayLongitude));
                     } else {
-                        Log.i("ncarignan.location", "didnt work")
+                        Log.i("ncarignan.location", "didnt work");
                     }
                 }
             });
