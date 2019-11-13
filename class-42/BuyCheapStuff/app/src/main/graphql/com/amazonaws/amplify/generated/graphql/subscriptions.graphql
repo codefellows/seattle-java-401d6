@@ -1,0 +1,85 @@
+# this is an auto generated file. This will be overwritten
+subscription OnCreateBuyableItem {
+  onCreateBuyableItem {
+    id
+    title
+    priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
+  }
+}
+subscription OnUpdateBuyableItem {
+  onUpdateBuyableItem {
+    id
+    title
+    priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
+  }
+}
+subscription OnDeleteBuyableItem {
+  onDeleteBuyableItem {
+    id
+    title
+    priceInCents
+    collection {
+      id
+      title
+      items {
+        nextToken
+      }
+    }
+  }
+}
+subscription OnCreateCollection {
+  onCreateCollection {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}
+subscription OnUpdateCollection {
+  onUpdateCollection {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}
+subscription OnDeleteCollection {
+  onDeleteCollection {
+    id
+    title
+    items {
+      items {
+        id
+        title
+        priceInCents
+      }
+      nextToken
+    }
+  }
+}

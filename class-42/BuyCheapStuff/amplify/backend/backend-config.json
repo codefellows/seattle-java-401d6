@@ -1,0 +1,33 @@
+{
+    "api": {
+        "buycheapstuff2": {
+            "service": "AppSync",
+            "providerPlugin": "awscloudformation",
+            "output": {
+                "authConfig": {
+                    "additionalAuthenticationProviders": [],
+                    "defaultAuthentication": {
+                        "authenticationType": "API_KEY",
+                        "apiKeyConfig": {
+                            "description": "buycheapstuff2apikey",
+                            "apiKeyExpirationDays": "365"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "auth": {
+        "buycheapstuff906428b1": {
+            "service": "Cognito",
+            "providerPlugin": "awscloudformation",
+            "dependsOn": []
+        }
+    },
+    "storage": {
+        "s31b7ba480": {
+            "service": "S3",
+            "providerPlugin": "awscloudformation"
+        }
+    }
+}
