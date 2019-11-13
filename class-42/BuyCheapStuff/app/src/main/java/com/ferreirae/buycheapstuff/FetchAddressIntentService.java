@@ -12,7 +12,6 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.gms.common.internal.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,35 +19,19 @@ import java.util.List;
 import java.util.Locale;
 
 public class FetchAddressIntentService extends IntentService {
-    public static final String TAG = "ncarignan.location";
-    public static final int SUCCESS_RESULT = 0;
-    public static final int FAILURE_RESULT = 1;
-    public static final String PACKAGE_NAME =
-            "com.google.android.gms.location.sample.locationaddress";
-    public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
-    public static final String RESULT_DATA_KEY = PACKAGE_NAME +
-            ".RESULT_DATA_KEY";
-    public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
-            ".LOCATION_DATA_EXTRA";
+    private ResultReceiver receiver;
 
-    protected ResultReceiver receiver;
+    private String TAG = "ncarignan.fetchservice";
 
-
-    public FetchAddressIntentService(ResultReceiver resultReceiver){
+    public FetchAddressIntentService(){
         super("FetchAddressIntentService");
-        this.receiver = resultReceiver;
     }
-
-    private void deliverResultToReceiver(int resultCode, String message) {
-        Bundle bundle = new Bundle();
-        bundle.putString(RESULT_DATA_KEY, message);
-        receiver.send(resultCode, bundle);
-    }
-
 
     @Override
     protected void onHandleIntent(Intent intent) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+
         if (intent == null) {
             return;
         }
@@ -56,7 +39,7 @@ public class FetchAddressIntentService extends IntentService {
 
         // Get the location passed to this service through an extra.
         Location location = intent.getParcelableExtra(
-                LOCATION_DATA_EXTRA);
+                Constants.LOCATION_DATA_EXTRA);
 
         // ...
 
@@ -87,7 +70,7 @@ public class FetchAddressIntentService extends IntentService {
                 errorMessage = getString(R.string.no_address_found);
                 Log.e(TAG, errorMessage);
             }
-            deliverResultToReceiver(FAILURE_RESULT, errorMessage);
+            deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
         } else {
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<String>();
@@ -98,9 +81,16 @@ public class FetchAddressIntentService extends IntentService {
                 addressFragments.add(address.getAddressLine(i));
             }
             Log.i(TAG, getString(R.string.address_found));
-            deliverResultToReceiver(SUCCESS_RESULT,
+            deliverResultToReceiver(Constants.SUCCESS_RESULT,
                     TextUtils.join(System.getProperty("line.separator"),
                             addressFragments));
         }
+    }
+
+
+    private void deliverResultToReceiver(int resultCode, String message) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.RESULT_DATA_KEY, message);
+        receiver.send(resultCode, bundle);
     }
 }

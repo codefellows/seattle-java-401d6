@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -89,9 +91,11 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
     //AWS
     AWSAppSyncClient awsAppSyncClient;
 
-    private FusedLocationProviderClient mFusedLocationClient;
-    private double wayLatitude = 0.0;
-    private double wayLongitude = 0.0;
+    // Location
+    private FusedLocationProviderClient mLocationProviderClient;
+//    private AddressResultReceiver resultReceiver;
+    private String address;
+
 
     public void putDataOnPage(String data) {
         TextView headerTextView = findViewById(R.id.hiTextView);
@@ -125,7 +129,42 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
 
         ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION}, 10);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Location
+        mLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+
+        Button locButton = findViewById(R.id.getLocation);
+        locButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View event) {
+                mLocationProviderClient.getLastLocation().addOnSuccessListener(MainActivity.this, new OnSuccessListener<Location>(){
+
+                    @Override
+                    public void onSuccess(final Location location) {
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.i("ncarignan.location", location.toString());
+                                Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                                try {
+                                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                    Log.i("ncarignan.location", addresses.toString());
+                                    address = addresses.get(0).getAddressLine(0);
+                                    ;                        } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).run();
+
+
+
+                    }
+
+                });
+            }
+        });
 
 
 
@@ -211,6 +250,8 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
         recyclerView.setAdapter(this.buyableItemAdapter);
 
 
+
+
         // grab the button, using its ID and the generated R (resource) info
         Button button = findViewById(R.id.button);
         // add the event listener to the button
@@ -228,7 +269,11 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
                 enteredItemName = editText.getText().toString();
 
                 // tell graphql to add the item
-                runAddBuyableItemMutation(enteredItemName);
+                if(address != null){
+                    runAddBuyableItemMutation(address);
+                } else {
+                    runAddBuyableItemMutation(enteredItemName);
+                }
 
                 MainActivity.this.findViewById(R.id.results).setVisibility(View.VISIBLE);
             }
@@ -435,18 +480,7 @@ public class MainActivity extends AppCompatActivity implements BuyableItemAdapte
 
             }
 
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if(location != null){
-                        wayLatitude = location.getLatitude();
-                        wayLongitude = location.getLongitude();
-                        Log.i("ncarignan.location", String.format(Locale.US, "%s -- %s", wayLatitude, wayLongitude));
-                    } else {
-                        Log.i("ncarignan.location", "didnt work");
-                    }
-                }
-            });
+
         }
     }
     public void pickFile(View v) {
